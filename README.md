@@ -10,7 +10,7 @@
 
 To start this tutorial, you will first need to get the [infrastructure setup](https://github.com/minlanyu/cs145-site/blob/spring2023/infra.md) and clone this repository with submodules
 ```
-git clone --recurse-submodules git@github.com:Harvard-CS145/cs145-23-project0.git
+git clone --recurse-submodules <your repository>
 ```
 
 ### Networking terms
