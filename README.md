@@ -143,6 +143,8 @@ You can test your solution in the following steps:
 
 ## Running Applications on your network
 
+Note: The "resources" folder used in this experiment can be downloaded [here](https://drive.google.com/file/d/1724mIIyNezMSBW4GTXOz-k1Efx49iqgD/view?usp=share_link).
+
 These applications will also be used in future projects.
 
 Although you are running a network in your laptop, you can run networked applications on the hosts as if you are running a real network. Here we introduce three applications that are representative for data center traffic: video streaming, Memcached and Iperf. The goal here is for you to get familiar with these applications so that we can use them to evaluate our network design in futurre projects.
