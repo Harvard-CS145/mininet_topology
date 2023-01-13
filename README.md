@@ -199,38 +199,26 @@ The `bw` field defines the link bandwidth, whose unit is Mbps.
 
 How does the video bitrate change over time for 100 Kbps, 1 Mbps, 2 Mbps and 4 Mbps? When do you start to see the video quality drop?
 
-### Run Memcached and Iperf
+### Iperf
 
-We provide you with an easy script to run Memcached and Iperf servers and clients on hosts, this will be useful in the later projects:
-```
-sudo ./apps/send_traffic.py --trace ./apps/trace/project0.trace
-```
-Then you will run your applications for 1~2 mins. After finishing running, you will get the results, including the latency of memcached requests and the throughput of iperf requests.
-```
-########### Traffic Sender ############
-Trace file: ./apps/trace/project0.trace
-Host list: dict_keys(['h1', 'h2', 'h3'])
-Traffic duration: 78.0 seconds
-Log directory: logs
-start iperf and memcached servers
-Wait 5 sec for iperf and memcached servers to start
-Start iperf and memcached clients
-Run iperf client on host h1
-Run iperf client on host h2
-Run iperf client on host h3
-Wait for experiment to finish
-Stop everything
-Average latency of Memcached Requests: 58370.51666666667 us
-Average throughput of Iperf Traffic: 346.4047333333334 kbps
-```
+Iperf is a tool that measures the bandwidth between two hosts. 
 
-**Check logs**
-
-You can check the result files in `logs` directory. In this directory, you can find files like `hX_iperf.log` or `hX_mc.log`.
-In files `hX_iperf.log`, each line represents the average throughput of one iperf request, which is issued by host `hX`.
-In files `hX_mc.log`, each line represents the request latency of one memcached request, which is issued by host `hX`.
-
-*Note*: if you are using Windows laptop, please be aware about that Windows and Linux handle newlines differently. Windows uses `\r\n` at the end of a line, while Linux uses `\n`. Therefore, please do not edit those files in your Windows host. If you want to use some text editor to edit the files in the VM through SSH or SFTP, be sure to set the correct newline symbol.
+To run iperf, first, you can access terminals for h1 and h2:
+```
+mininet> xterm h1
+```
+```
+mininet> xterm h2
+```
+In h1 terminal, you can start the iperf server, for example:
+```
+iperf -s
+```
+And for h2 terminal, you can start the iperf client and send traffic to h1:
+```
+iperf -c 10.0.0.1
+```
+After finishing iperf, you will get the bandwidth results from the application output. Similar to the streaming application, you can adjust the bandwidth to see if the iperf result differs. 
 
 ## Debugging and Troubleshooting
 
