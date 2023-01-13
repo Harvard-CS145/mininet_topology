@@ -199,48 +199,29 @@ The `bw` field defines the link bandwidth, whose unit is Mbps.
 
 How does the video bitrate change over time for 100 Kbps, 1 Mbps, 2 Mbps and 4 Mbps? When do you start to see the video quality drop?
 
-**Generate request trace**
+### Run Memcached and Iperf
 
-We provide you with a trace generator which generate requests for Memcached and Iperf, which is located in `apps/trace/` directory. You can check `apps/trace/README.md` for detailed instructions.
-
-For example, if you want to run Memcached on host `h1-h3`, run Iperf on host `h1` and `h3`, and generate a trace for 60 seconds, you can first edit apps/trace/trace.json:
-
+We provide you with an easy script to run Memcached and Iperf servers and clients on hosts, this will be useful in the later projects:
 ```
-{
-    "memcached_host_list": [1, 2, 3],
-    "iperf_host_list": [1, 3],
-    "length": 60,
-    "file": "apps/trace/test.trace"
-}
+sudo ./apps/send_traffic.py --trace ./apps/trace/project0.trace
 ```
-
-And then type:
-
+Then you will run your applications for 1~2 mins. After finishing running, you will get the results, including the latency of memcached requests and the throughput of iperf requests.
 ```
-python ./apps/trace/generate_trace.py
-```
-
-After generating the trace, you will find a file named `test.trace` in `apps/trace` directory. 
-
-**Run Memcached and Iperf**
-
-We provide you with an easy script to run Memcached and Iperf servers and clients on hosts:
-```
-sudo python ./apps/send_traffic.py --trace ./apps/trace/test.trace --host 1-3 --length 60
-```
-Then you will run your applications for 60 seconds. After finishing running, you will get the results, including the latency of memcached requests and the throughput of iperf requests.
-```
+########### Traffic Sender ############
+Trace file: ./apps/trace/project0.trace
+Host list: dict_keys(['h1', 'h2', 'h3'])
+Traffic duration: 78.0 seconds
+Log directory: logs
 start iperf and memcached servers
-wait 1 sec for iperf and memcached servers to start
-start iperf and memcached clients
-wait for experiment to finish
-stop everything
-wait 10 sec to make log flushed
-Average latency of Memcached Requests: 326.585716909 (us)
-Average log(latency) of Memcached Requests: 1.37206216773
-Average throughput of Iperf Traffic: 23454086.8092 (bps)
-Average log(throughput) of Iperf Traffic: 6.24738717264
-4.87532500491
+Wait 5 sec for iperf and memcached servers to start
+Start iperf and memcached clients
+Run iperf client on host h1
+Run iperf client on host h2
+Run iperf client on host h3
+Wait for experiment to finish
+Stop everything
+Average latency of Memcached Requests: 58370.51666666667 us
+Average throughput of Iperf Traffic: 346.4047333333334 kbps
 ```
 
 **Check logs**
