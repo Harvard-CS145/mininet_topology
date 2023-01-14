@@ -199,22 +199,58 @@ The `bw` field defines the link bandwidth, whose unit is Mbps.
 
 How does the video bitrate change over time for 100 Kbps, 1 Mbps, 2 Mbps and 4 Mbps? When do you start to see the video quality drop?
 
-### Iperf
+### Memcached
 
-Iperf is a tool that measures the bandwidth between two hosts. 
 
-To run iperf, first, you can access terminals for h1 and h2:
+Memcached server is a software that provides a service to store and retrieve data in memory, using a key-value pair structure. Clients, on the other hand, are applications that connect to the Memcached server to store and retrieve data. In the following experiment, we will build a memcached server on `h2`, providing services for `h1`.
+
+In order to start the server and client, first, you can access terminals for `h1` and `h2`
 ```
 mininet> xterm h1
 ```
 ```
 mininet> xterm h2
 ```
-In h1 terminal, you can start the iperf server, for example:
+In `h2` terminal, you can start the memcached server, for example:
+```
+memcached -u p4 -m 100
+```
+For `h1` terminal, you can connect to `h2` memcached service port in telnet protocol by
+```
+telnet 10.0.0.2 11211
+```
+After the connection is established, you can store data to `h2`, for example
+```
+set CS145 0 900 9
+```
+```
+memcached
+```
+Then you will see a "STORED" output message from your terminal. After that, you can try retrieving the data by:
+```
+get CS145
+```
+Then you can see the data you stored before. Now we try to get some data that do not exist in the server:
+```
+get CS243
+```
+You can see an "END" output message because no data is returned. 
+### Iperf
+
+Iperf is a tool that measures the bandwidth between two hosts. 
+
+To run iperf, first, you can access terminals for `h1` and `h2`:
+```
+mininet> xterm h1
+```
+```
+mininet> xterm h2
+```
+In `h1` terminal, you can start the iperf server, for example:
 ```
 iperf -s
 ```
-And for h2 terminal, you can start the iperf client and send traffic to h1:
+And for `h2` terminal, you can start the iperf client and send traffic to `h1`:
 ```
 iperf -c 10.0.0.1
 ```
@@ -284,7 +320,7 @@ You are expected to submit the following files. Please make sure all files are i
 - `controller/controller_circle.py`. This file contains how you insert forwarding rules into P4 switches.
 - `report/report.md`. Please write the description of your work in `report/report.md` file (the `report` directory locates at the root directory of project 0). The description includes:
 	- How do you write forwarding rules in the `controller/controller_circle.py` file, and why do those rules work to enable communications between each pair of hosts.
-	- After running the applications, you can get the evaluation results. Please run both applications on all hosts, i.e., on host `h1-h3`. You will get average log(latency) of memcached requests, and average log(throughput) of iperf. Write these evaluation results in this file.
+	- After running the applications, you can get the evaluation results. Please run these applications on all hosts, i.e., on host `h1-h3`. You will get the average log(throughput) of iperf and the streaming throughput from the video application. Write these evaluation results in this file.
 
 You are expected to use Github Classroom to submit your project. 
 After completing a file, e.g., the `topology/p4app_circle.json` file, you can submit this file by using the following commands:
