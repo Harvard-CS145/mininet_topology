@@ -211,11 +211,11 @@ mininet> xterm h1
 ```
 mininet> xterm h2
 ```
-In `h2` terminal, you can start the memcached server, for example:
+In `h2` terminal, we start the memcached server, for example:
 ```
 memcached -u p4 -m 100
 ```
-For `h1` terminal, you can connect to `h2` memcached service port in telnet protocol by
+After `h2` memcached server is up, for `h1` terminal, you can connect to `h2` memcached service port in telnet protocol by
 ```
 telnet 10.0.0.2 11211
 ```
