@@ -226,11 +226,11 @@ set CS145 0 900 9
 ```
 memcached
 ```
-Then you will see a "STORED" output message from your terminal. After that, you can try retrieving the data by:
+Then you will see a "STORED" output message from your terminal. After that, you can try retrieving the data by
 ```
 get CS145
 ```
-Then you can see the data you stored before. Now we try to get some data that do not exist in the server:
+Then you can see the data you stored before. Now we try to get some data that do not exist in the server
 ```
 get CS243
 ```
@@ -239,18 +239,18 @@ You can see an "END" output message because no data is returned.
 
 Iperf is a tool that measures the bandwidth between two hosts. 
 
-To run iperf, first, you can access terminals for `h1` and `h2`:
+To run iperf, first, you can access terminals for `h1` and `h2`
 ```
 mininet> xterm h1
 ```
 ```
 mininet> xterm h2
 ```
-In `h1` terminal, you can start the iperf server, for example:
+In `h1` terminal, you can start the iperf server, for example
 ```
 iperf -s
 ```
-And for `h2` terminal, you can start the iperf client and send traffic to `h1`:
+And for `h2` terminal, you can start the iperf client and send traffic to `h1`
 ```
 iperf -c 10.0.0.1
 ```
