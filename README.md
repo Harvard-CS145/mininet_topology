@@ -334,7 +334,6 @@ The total grade for project 0 is 100 as follows:
 - *40*: Pass the first three tests: topology tests
 - *40*: Pass the fourth test: connectivity test
 - *20*: for `report/report.md` file.
-- *10*: Extra credit
 - *deductions based on late policies*.
 
 ### Survey
