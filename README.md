@@ -333,11 +333,7 @@ git push origin main # push the code to the remote github repository
 ```
 
 ### Grading
-The total grade for project 0 is 100 as follows:
-- *40*: Pass the first three tests: topology tests
-- *40*: Pass the fourth test: connectivity test
-- *20*: for `report/report.md` file.
-- *deductions based on late policies*.
+This project do not grade. 
 
 ### Survey
 
