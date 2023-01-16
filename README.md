@@ -13,6 +13,9 @@ To start this tutorial, you will first need to get the [infrastructure setup](ht
 git clone --recurse-submodules <your repository>
 ```
 
+Run `./pull_update.sh` to pull project updates (if any). You might need to merge conflicts manually: most of the time, you just need to accept incoming changes; reach to TF if it is hard to merge. This step also applies to all subsequent projects. 
+
+
 ### Networking terms
 
 We start by defining a few networking terms used in this project. Note that the description here is not precise but just a way for you to understand the problem. You will learn the actual meanings of the terms after a few lectures in the class. For now, you can imagine a *topology* just as a graph, where *switches* and *hosts* are nodes in the graph, and they are connected by *links*. *Hosts* are those nodes at the edge of the graph. They can generate traffic and run applications. *Switches* are internal nodes in the graph that connect *hosts* or *switches* together. *Port* indicates the end of each link at a *node*.  
