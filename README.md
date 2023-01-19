@@ -323,7 +323,7 @@ You are expected to submit the following files. Please make sure all files are i
 - `controller/controller_circle.py`. This file contains how you insert forwarding rules into P4 switches.
 - `report/report.md`. Please write the description of your work in `report/report.md` file (the `report` directory locates at the root directory of project 0). The description includes:
 	- How do you write forwarding rules in the `controller/controller_circle.py` file, and why do those rules work to enable communications between each pair of hosts.
-	- After running the applications, you can get the evaluation results. Please run these applications on all hosts, i.e., on host `h1-h3`. You will get the average log(throughput) of iperf and the streaming throughput from the video application. Write these evaluation results in this file.
+	- After running the applications, you can get the evaluation results. Please run these applications on all hosts, i.e., on host `h1-h3`. You will get the average throughput of iperf and the streaming throughput from the video application. Write these evaluation results in this file.
 
 You are expected to use Github Classroom to submit your project. 
 After completing a file, e.g., the `topology/p4app_circle.json` file, you can submit this file by using the following commands:
