@@ -1,10 +1,57 @@
 # Debugging and Troubleshooting
 
+### Read switch logs
+
+Each p4 switch provides a log file for debugging. In the `log` directory, the file `sX.log` includes the logs of all the operations that happen at switch `sX`.
+In the log, two important records are: adding table entry and packet processing.
+
+When you use your controller script to add table entry in the P4 switch, the log file may include:
+```
+[11:18:35.237] [bmv2] [T] [thread 15987] bm_table_add_entry
+[11:18:35.237] [bmv2] [D] [thread 15987] Entry 0 added to table 'MyIngress.dmac'
+[11:18:35.237] [bmv2] [D] [thread 15987] Dumping entry 0
+Match key:
+* hdr.ethernet.dstAddr: EXACT     00000a000001
+Action entry: MyIngress.forward - 1
+```
+This means you add a table entry, whose key is the destination MAC address `00000a000001`, and the action is `forward(1)`.
+
+After a switch processes a packet, the log file may include all the stages the packet incurs at the switch: 
+```
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Processing packet received on port 2
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Parser 'parser': start
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Parser 'parser' entering state 'start'
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Extracting header 'ethernet'
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[11:19:01.206] [bmv2] [T] [thread 15855] [14.0] [cxt 0] Bytes parsed: 14
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Parser 'parser': end
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Pipeline 'ingress': start
+[11:19:01.206] [bmv2] [T] [thread 15855] [14.0] [cxt 0] Applying table 'MyIngress.dmac'
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Looking up key:
+* hdr.ethernet.dstAddr: 00000a000001
+
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Table 'MyIngress.dmac': hit with handle 0
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Dumping entry 0
+Match key:
+* hdr.ethernet.dstAddr: EXACT     00000a000001
+Action entry: MyIngress.forward - 1,
+
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Action entry is MyIngress.forward - 1,
+[11:19:01.206] [bmv2] [T] [thread 15855] [14.0] [cxt 0] Action MyIngress.forward
+[11:19:01.206] [bmv2] [T] [thread 15855] [14.0] [cxt 0] p4src/line_topo.p4(72) Primitive standard_metadata.egress_spec = egress_port
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Pipeline 'ingress': end
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Egress port is 1
+[11:19:01.207] [bmv2] [D] [thread 15857] [14.0] [cxt 0] Pipeline 'egress': start
+[11:19:01.207] [bmv2] [D] [thread 15857] [14.0] [cxt 0] Pipeline 'egress': end
+[11:19:01.207] [bmv2] [D] [thread 15857] [14.0] [cxt 0] Deparser 'deparser': start
+[11:19:01.207] [bmv2] [D] [thread 15857] [14.0] [cxt 0] Deparsing header 'ethernet'
+[11:19:01.207] [bmv2] [D] [thread 15857] [14.0] [cxt 0] Deparser 'deparser': end
+[11:19:01.207] [bmv2] [D] [thread 15860] [14.0] [cxt 0] Transmitting packet of size 74 out of port 1
+```
+
 ### Monitoring Traffic
 
-Sniffing traffic can be a very powerful tool when debugging your P4 program. Basic things like verifying
-if traffic crosses certain path, or if header fields look like expected can be easily achieved by just
-observing traffic. For that, there is a wide range of tools that can be used:
+Monitoring traffic is another powerful tool when debugging your P4 program. Traffic information can help us verify whether a packet crosses a certain path, or if a packet header field is as expected. For that, there is a wide range of tools that can be used:
 
 #### Pcap Files:
 
@@ -110,11 +157,8 @@ You can find a P4 debugger user guide in the bmv2
 
 ### Attaching Information to a Packet
 
-Some times you do not want to use the logging system or debugger, or basically they are disabled. Yet, you could still
-get some insights on what the code does by just modifying a header field depending on which part of the code
-gets executed and check that value when the packet leaves the switch. Of course you can do something more sophisticated, and
+Some times you do not want to use the logging system or debugger, or basically they are disabled. Yet, you could still get some insights on what the code does by just modifying a header field depending on which part of the code gets executed and check that value when the packet leaves the switch. Of course you can do something more sophisticated, and
 and use several fields, read the value of a register and save it in the header, and so on.
-
 
 ### Using P4 tables to inspect headers/metadata values
 
