@@ -205,8 +205,13 @@ How do the buffer level and the bandwidth change over time for 100 Kbps, 1 Mbps,
 
 ### Memcached
 
-
 Memcached server is a software that provides a service to store and retrieve data in memory, using a key-value pair structure. Clients, on the other hand, are applications that connect to the Memcached server to store and retrieve data. In the following experiment, we will build a memcached server on `h2`, providing services for `h1`.
+
+> You might need to install memcached if it's not pre-installed on your VM.
+```
+sudo apt install memcached
+pip install memcache
+```
 
 In order to start the server and client, first, you can access terminals for `h1` and `h2`
 ```
