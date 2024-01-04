@@ -207,44 +207,75 @@ Question: IlliniFlix reports the bandwidth usage for its video streaming. How do
 
 We provide a trace generator which generate requests for Memcached and Iperf, which is located in `apps/trace/` directory. You can check `apps/trace/README.md` for detailed instructions.
 
-For example, if you want to run Memcached on host 'h1', 'h2', and 'h3', run Iperf on host `h1` and `h3`, and generate a trace for 60 seconds, you can first edit apps/trace/trace.json:
+For example, if you want to run Memcached on host 'h1', 'h2', and 'h3', run Iperf on host `h1` and `h3`, and generate a trace for 60 seconds, you can first edit apps/trace/project0.json:
 
 ```
 {
-    "memcached_host_list": [1, 2, 3],
-    "iperf_host_list": [1, 3],
-    "length": 60,
-    "file": "apps/trace/test.trace"
+    "flow_groups": [
+        {
+            "start_time": 0,
+            "length": 60000000,
+            "src_host_list": ["h1", "h3"],
+            "dst_host_list": ["h1", "h3"],
+            "flow_size_distribution": {
+                "type": "constant",
+                "value": 10000000
+            },
+            "flow_gap_distribution": {
+                "type": "constant",
+                "value": 2000000
+            },
+            "flowlet_size_distribution": {
+                "type": "constant",
+                "value": 0
+            },
+            "flowlet_gap_distribution": {
+                "type": "constant",
+                "value": 0
+            }
+        }
+    ],
+    "mc_host_list": ["h1", "h2", "h3"],
+    "mc_gap_distribution": {
+        "type": "constant",
+        "value": 1000000
+    },
+    "length": 60000000,
+    "output": "./apps/trace/project0.trace"
 }
 ```
 
 And then type:
 
 ```
-python ./apps/trace/generate_trace.py
+./apps/trace/generate_trace.py apps/trace/project0.trace
 ```
 
-After generating the trace, you will find a file named `test.trace` in `apps/trace` directory. 
+After generating the trace, you will find a file named `project0.trace` in `apps/trace` directory. 
 
 **Run Memcached and Iperf**
 
 We provide an easy script to run Memcached and Iperf servers and clients on hosts:
 ```
-sudo python ./apps/send_traffic.py --trace ./apps/trace/test.trace --host 1-3 --length 60
+./apps/send_traffic.py --trace ./apps/trace/project0.trace
 ```
 The script will send traffic for 60 seconds. After finishing running, you will get the measurement results, including the latency of memcached requests and the throughput of iperf requests.
 ```
+########### Traffic Sender ############
+Trace file: ./apps/trace/project0.trace
+Host list: dict_keys(['h1', 'h2', 'h3'])
+Traffic duration: 78.0 seconds
+Log directory: logs
 start iperf and memcached servers
-wait 1 sec for iperf and memcached servers to start
-start iperf and memcached clients
-wait for experiment to finish
-stop everything
-wait 10 sec to make log flushed
-Average latency of Memcached Requests: 326.585716909 (us)
-Average log(latency) of Memcached Requests: 1.37206216773
-Average throughput of Iperf Traffic: 23454086.8092 (bps)
-Average log(throughput) of Iperf Traffic: 6.24738717264
-4.87532500491
+Wait 5 sec for iperf and memcached servers to start
+Start iperf and memcached clients
+Run iperf client on host h1
+Run iperf client on host h2
+Run iperf client on host h3
+Wait for experiment to finish
+Stop everything
+Average latency of Memcached Requests: 66828.3 us
+Average throughput of Iperf Traffic: 392.4096666666666 kbps
 ```
 
 **Check logs**
@@ -268,4 +299,4 @@ Project 0 won't be graded.
 
 Please fill up the survey when you finish your project.
 
-[Survey link](https://forms.gle/FrAdcFPMTKgdWE9i9)
+[Survey link](https://docs.google.com/forms/d/e/1FAIpQLSf5l5XFowublpGOJB6uja5j_5uYW05YfAocjEOOw45ZWqoDrg/viewform?usp=pp_url)

@@ -2,9 +2,9 @@
 
 ### Read switch logs
 
-Each p4 switch provides a log file for debugging. In the `log` directory, the file `sX.log` includes the logs of all the operations that happen at switch `sX`.
-In the log, two important records are: adding table entry and packet processing.
+Switch logs are often the most helpful tool for debugging. Each p4 switch provides a log file. In the `log` directory, the file `sX.log` includes the logs of all the operations that happen at switch `sX`. In the log, two important records are: adding table entry and packet processing.
 
+#### Examining table entries
 When you use your controller script to add table entry in the P4 switch, the log file may include:
 ```
 [11:18:35.237] [bmv2] [T] [thread 15987] bm_table_add_entry
@@ -16,6 +16,7 @@ Action entry: MyIngress.forward - 1
 ```
 This means you add a table entry, whose key is the destination MAC address `00000a000001`, and the action is `forward(1)`.
 
+#### Monitoring packet processing and traveling
 After a switch processes a packet, the log file may include all the stages the packet incurs at the switch: 
 ```
 [11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Processing packet received on port 2
@@ -48,10 +49,9 @@ Action entry: MyIngress.forward - 1,
 [11:19:01.207] [bmv2] [D] [thread 15857] [14.0] [cxt 0] Deparser 'deparser': end
 [11:19:01.207] [bmv2] [D] [thread 15860] [14.0] [cxt 0] Transmitting packet of size 74 out of port 1
 ```
+With these records, you can verify whether a packet crosses a certain path, whether the fields used as matching keys have expected values, and whether the action and action parameters are correct. For example, when you are running the line topology of project mininet_topology, you can first run command `h1 ping h2 -c1` to ping h2 exactly once from h1. Next, you can check s1's log to verify that (1) the `dmac` table has an entry matching the destination MAC address, (2) the correct action is taken, and (3) the action parameter (i.e., the egress port) has the correct value. Then, you can move on to check s2's log and verify that this packet has arrived at s2 and processed there.
 
-### Monitoring Traffic
-
-Monitoring traffic is another powerful tool when debugging your P4 program. Traffic information can help us verify whether a packet crosses a certain path, or if a packet header field is as expected. For that, there is a wide range of tools that can be used:
+### Alternative tools
 
 #### Pcap Files:
 
@@ -62,11 +62,11 @@ enable pcap logging when starting your switch, use the `--pcap=<output_dir>` com
 sudo simple_switch -i 0@<iface0> -i 1@<iface1> --pcap=<output_dir> <path to JSON file>
 ```
 
-Pcap logging will create several files using the following naming: `<sw_name>-<intf_num>_<in|out>.pcap`.
+Pcap logging will create several files using the following naming: `<sw_name>-<intf_num>_<in|out>.pcap`. These files contain useful information such as packet header fields and payload values.
 
-**P4 Utils Integration**:
+##### P4 Utils Integration:
 
-If you enable pcap in the `p4app.json` configuration file, switches will be started with the `--pcap` option and use as output dir `./pcap`.
+If you enable pcap in the `p4app.json` configuration file, switches will be started with the `--pcap` option and use `./pcap` as the output directory.
 
 #### Wireshark/Tshark:
 
@@ -108,15 +108,15 @@ it to a log file:
 sudo simple_switch -i 0@<iface0> -i 1@<iface1> --log-console <path to JSON file> >/path_to_file/sw.log
 ```
 
-#### P4 Utils Integration
+##### P4 Utils Integration
 
 If you enable logging in the `p4app.json` configuration file, switches will automatically write all the console logging
-into a file in the `./log` directory and with `<sw_name>.log`.
+into a file in the `./log` directory and with the name `<sw_name>.log`.
 
 #### CLI logging
 
-If logging is enabled, and you use the `simple_switch_CLI` when starting the topology (with `p4utils`) the output
-of the `cli` will be also logged in the log folder under the name `<sw_name>_cli_output.log`
+If logging is enabled and you use the `simple_switch_CLI` when starting the topology (with `p4utils`), the output
+of the `cli` will also be logged in the log folder under the name `<sw_name>_cli_output.log`
 
 #### Event logging
 
@@ -141,7 +141,8 @@ to check the `print` messages displayed by `p4run`. Try to find a line that look
 s1 -> Thrift port: 9090
 ```
 
-### Debugger
+### Advanced Debugging
+#### Debugger
 
 To enable the debugger, make sure that you passed the `--enable-debugger` flag
 to `configure`. You will also need to use the `--debugger` command line flag
@@ -155,17 +156,13 @@ attach the debugger to the switch:
 You can find a P4 debugger user guide in the bmv2
  [docs](https://github.com/p4lang/behavioral-model/blob/master/docs/p4dbg_user_guide.md).
 
-### Attaching Information to a Packet
+#### Attaching Information to a Packet
 
-Some times you do not want to use the logging system or debugger, or basically they are disabled. Yet, you could still get some insights on what the code does by just modifying a header field depending on which part of the code gets executed and check that value when the packet leaves the switch. Of course you can do something more sophisticated, and
-and use several fields, read the value of a register and save it in the header, and so on.
+Some times you do not want to use the logging system or debugger, or basically they are disabled. Yet, you could still get some insights on what the code does by just modifying a header field depending on which part of the code gets executed and check that value when the packet leaves the switch. Of course you can do something more sophisticated, and use several fields, read the value of a register and save it in the header, and so on.
 
-### Using P4 tables to inspect headers/metadata values
+#### Using P4 tables to inspect headers/metadata values
 
-We already have an [example](./debugging_table/) covering this. Basically the idea is to use
-P4 tables and do an `exact` match to all the fields you want to track. Every time the table is executed, if the bmv2
-debugging is enabled, the switch will write the values of each field that was used to match the table entry in the switch
-log file. See the example for more information.
+We already have an [example](./debugging_table/) covering this. Basically the idea is to use P4 tables and do an `exact` match to all the fields you want to track. Every time the table is executed, if the bmv2 debugging is enabled, the switch will write the values of each field that was used to match the table entry in the switch log file. See the example for more information.
 
 ### If the above did not solve your problem:
 
