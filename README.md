@@ -5,16 +5,16 @@
 * Get familiar with the experiment environment: Mininiet, Topology configurations, controller, etc.
 * Create your own circle topology
 * Run example applications on the simple topology and learn how to read their performance numbers
-* This project will not be graded but it will serve as the basis for future projects.
 
 ## Tutorial: The line topology example
 
-To start this tutorial, you will first need to get the [infrastructure setup](https://github.com/minlanyu/cs145-site/blob/spring2023/infra.md) and learn the [Github setup](https://cs61.seas.harvard.edu/site/2021/SetupGitHub/). 
+To start this tutorial, you will first need to get the [infrastructure setup](https://github.com/minlanyu/cs145-site/blob/spring2023/infra.md) and clone this repository with submodules
+```
+git clone --recurse-submodules <your repository>
+```
 
-and clone this repository with submodules
-```
-git clone --recurse-submodules <this repository>
-```
+Run `./pull_update.sh` to pull project updates (if any). You might need to merge conflicts manually: most of the time, you just need to accept incoming changes; reach to TF if it is hard to merge. This step also applies to all subsequent projects. 
+
 
 ### Networking terms
 
@@ -22,7 +22,7 @@ We start by defining a few networking terms used in this project. Note that the 
 
 The job of networking is to deliver messages along a path of multiple nodes to finally reach the destination. This is a distributed process. That is, every node in the graph independently decide where to *forward* messages and together they deliver the message to the destination. To achieve this, each node will decide locally which *port* (i.e., link) to send the message based on its destination. This is called a *forwarding rule*. Your job would be program the forwarding rules. 
 
-### Step 1: Create the line topology in Mininet
+### Create the line topology in Mininet
 
 Let's first create the physical topology of the network in [Mininet](http://mininet.org/). The Mininet program automatically creates a virtual topology based on a *JSON configuration file*.
 The JSON configuration file should:
@@ -63,7 +63,7 @@ In the Mininet CLI, you can check out the nodes and links you create by running 
 For more information on how to use Mininet and other useful commands you can check out the [walkthough](http://mininet.org/walkthrough/) and [Mininet documentation](https://github.com/mininet/mininet/wiki/Documentation).
 
 
-### Step 2: Create networking software to run on the topology
+### Create networking software to run on the topology
 
 There are two pieces of software that can control traffic in the topology. The first is a *controller program*, which is responsible of running routing algorithms, generating forwarding rules, and installing the rules into the tables at switches. The second is a *p4 program* that specifies packet processing logics at switches.  
 For the line topology, we provide the controller program at `controller/controller_line.py` and the p4 program at `p4src/l2fwd.p4`. We do not need to touch the p4 program in this project. Basically, the p4 program defines a **dmac** table which maps the destination MAC address to the output port. 
@@ -85,7 +85,7 @@ This line adds a rule in the `dmac` table, with the `forward` action. The rule s
 
 In Mininet, by default hosts get assigned MAC addresses using the following pattern: `00:00:<IP address to hex>`. For example if h1 IP's address were `10.0.1.5` the MAC address would be: `00:00:0a:00:01:05`. The default IP address of host hX is `10.0.0.X`.
 
-To find out the port mappings for each switch, you can check the messages printed by when running the `p4run` command in Step 1:
+To find out the port mappings for each switch, you can check the messages printed by when running the `p4run` command:
 	
 ```
 Switch port mapping:
@@ -146,6 +146,8 @@ You can test your solution in the following steps:
 
 ## Running Applications on your network
 
+Note: The "resources" folder used in this experiment can be downloaded [here](https://drive.google.com/file/d/1724mIIyNezMSBW4GTXOz-k1Efx49iqgD/view?usp=share_link).
+
 These applications will also be used in future projects.
 
 Although you are running a network in your laptop, you can run networked applications on the hosts as if you are running a real network. Here we introduce three applications that are representative for data center traffic: video streaming, Memcached and Iperf. The goal here is for you to get familiar with these applications so that we can use them to evaluate our network design in futurre projects.
@@ -186,10 +188,10 @@ Try playing the video. You should see something like this:
 
 <img src="./figures/video.png" width="600">
 
-**Measure video streaming performance**
+**Video streaming performance**
 
-You can measure how the performance of the video stream changes as you increase and decrease the link bandwidth.
-You can set the link bandwidth in the topology configuration file before starting a new mininet network as follows
+You can try testing out how the performance of the video stream changes as you increase and decrease the link bandwidth.
+You can set the link bandwidth in the topology configuration file as follows
 ```
 "topology": {
     "assignment_strategy": "l2",
@@ -199,101 +201,140 @@ You can set the link bandwidth in the topology configuration file before startin
 ```
 The `bw` field defines the link bandwidth, whose unit is Mbps.
 
-Question: IlliniFlix reports the bandwidth usage for its video streaming. How do the buffer level and the bandwidth change over 100 Kbps, 1 Mbps, 2 Mbps, and 4 Mbps link bandwidth settings? Do you notice any differences in the video quality?
+How do the buffer level and the bandwidth change over time for 100 Kbps, 1 Mbps, 2 Mbps and 4 Mbps? When do you start to see the video quality drop?
 
 ### Memcached
 
-**Generate request trace**
 
-We provide a trace generator which generate requests for Memcached and Iperf, which is located in `apps/trace/` directory. You can check `apps/trace/README.md` for detailed instructions.
+Memcached server is a software that provides a service to store and retrieve data in memory, using a key-value pair structure. Clients, on the other hand, are applications that connect to the Memcached server to store and retrieve data. In the following experiment, we will build a memcached server on `h2`, providing services for `h1`.
 
-For example, if you want to run Memcached on host 'h1', 'h2', and 'h3', run Iperf on host `h1` and `h3`, and generate a trace for 60 seconds, you can first edit apps/trace/project0.json:
-
+In order to start the server and client, first, you can access terminals for `h1` and `h2`
 ```
-{
-    "flow_groups": [
-        {
-            "start_time": 0,
-            "length": 60000000,
-            "src_host_list": ["h1", "h3"],
-            "dst_host_list": ["h1", "h3"],
-            "flow_size_distribution": {
-                "type": "constant",
-                "value": 10000000
-            },
-            "flow_gap_distribution": {
-                "type": "constant",
-                "value": 2000000
-            },
-            "flowlet_size_distribution": {
-                "type": "constant",
-                "value": 0
-            },
-            "flowlet_gap_distribution": {
-                "type": "constant",
-                "value": 0
-            }
-        }
-    ],
-    "mc_host_list": ["h1", "h2", "h3"],
-    "mc_gap_distribution": {
-        "type": "constant",
-        "value": 1000000
-    },
-    "length": 60000000,
-    "output": "./apps/trace/project0.trace"
-}
+mininet> xterm h1
 ```
-
-And then type:
-
 ```
-./apps/trace/generate_trace.py apps/trace/project0.trace
+mininet> xterm h2
 ```
-
-After generating the trace, you will find a file named `project0.trace` in `apps/trace` directory. 
-
-**Run Memcached and Iperf**
-
-We provide an easy script to run Memcached and Iperf servers and clients on hosts:
+In `h2` terminal, we start the memcached server, for example:
 ```
-./apps/send_traffic.py --trace ./apps/trace/project0.trace
+memcached -u p4 -m 100
 ```
-The script will send traffic for 60 seconds. After finishing running, you will get the measurement results, including the latency of memcached requests and the throughput of iperf requests.
+After `h2` memcached server is up, for `h1` terminal, you can connect to `h2` memcached service port in telnet protocol by
 ```
-########### Traffic Sender ############
-Trace file: ./apps/trace/project0.trace
-Host list: dict_keys(['h1', 'h2', 'h3'])
-Traffic duration: 78.0 seconds
-Log directory: logs
-start iperf and memcached servers
-Wait 5 sec for iperf and memcached servers to start
-Start iperf and memcached clients
-Run iperf client on host h1
-Run iperf client on host h2
-Run iperf client on host h3
-Wait for experiment to finish
-Stop everything
-Average latency of Memcached Requests: 66828.3 us
-Average throughput of Iperf Traffic: 392.4096666666666 kbps
+telnet 10.0.0.2 11211
 ```
+After the connection is established, you can store data to `h2`, for example
+```
+set CS145 0 900 9
+```
+```
+memcached
+```
+Then you will see a "STORED" output message from your terminal. After that, you can try retrieving the data by
+```
+get CS145
+```
+Then you can see the data you stored before. Now we try to get some data that do not exist in the server
+```
+get CS243
+```
+You can see an "END" output message because no data is returned. 
+### Iperf
 
-**Check logs**
-The result files in `logs` directory has more details on the memcached latency and iperf throughput. In this directory, you can find files like `hX_iperf.log` or `hX_mc.log`.
-In files `hX_iperf.log`, each line represents the average throughput of one iperf request, which is issued by host `hX`.
-In files `hX_mc.log`, each line represents the request latency of one memcached request, which is issued by host `hX`.
+Iperf is a tool that measures the bandwidth between two hosts. 
 
-Question: You can compare the latency of the memcached traffic that shares the link with iperf with the latency for those memcached traffic that doesn't share the link. Why do you see the differences?
-
-*Note*: if you are using Windows laptop, please be aware about that Windows and Linux handle newlines differently. Windows uses `\r\n` at the end of a line, while Linux uses `\n`. Therefore, please do not edit those files in your Windows host. If you want to use some text editor to edit the files in the VM through SSH or SFTP, be sure to set the correct newline symbol.
+To run iperf, first, you can access terminals for `h1` and `h2`
+```
+mininet> xterm h1
+```
+```
+mininet> xterm h2
+```
+In `h1` terminal, you can start the iperf server, for example
+```
+iperf -s
+```
+And for `h2` terminal, you can start the iperf client and send traffic to `h1`
+```
+iperf -c 10.0.0.1
+```
+After finishing iperf, you will get the bandwidth results from the application output. Similar to the streaming application, you can adjust the bandwidth to see if the iperf result differs. 
 
 ## Debugging and Troubleshooting
 
-We maintain a list of debugging and troubleshooting tips [here](debug.md).
+Here's a brief introduction on how to read switch logs. You can also check out more debugging and troubleshooting tips [here](debug.md).
 **These debugging tips will be useful for all future projects. Please come back and revisit this in future projects**
 
+Each p4 switch provides a log file for debugging. Those files are located in the `log` directory.
+Within this directory, you can see files named `sX.log`, which indicates this file is the log file for switch `sX`.
+The log file records all operations happen within this switch.
+You only need to focus on two kinds of records: adding table entry and packet processing.
+
+When you use your controller script to add table entry in the P4 switch, there will be some words in the log file:
+```
+[11:18:35.237] [bmv2] [T] [thread 15987] bm_table_add_entry
+[11:18:35.237] [bmv2] [D] [thread 15987] Entry 0 added to table 'MyIngress.dmac'
+[11:18:35.237] [bmv2] [D] [thread 15987] Dumping entry 0
+Match key:
+* hdr.ethernet.dstAddr: EXACT     00000a000001
+Action entry: MyIngress.forward - 1
+```
+which means you add a table entry, whose key is the destination MAC address `00000a000001`, and the action is `forward(1)`.
+
+After the switch processes a packet, there will also be some words in the log file:
+```
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Processing packet received on port 2
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Parser 'parser': start
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Parser 'parser' entering state 'start'
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Extracting header 'ethernet'
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Parser state 'start' has no switch, going to default next state
+[11:19:01.206] [bmv2] [T] [thread 15855] [14.0] [cxt 0] Bytes parsed: 14
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Parser 'parser': end
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Pipeline 'ingress': start
+[11:19:01.206] [bmv2] [T] [thread 15855] [14.0] [cxt 0] Applying table 'MyIngress.dmac'
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Looking up key:
+* hdr.ethernet.dstAddr: 00000a000001
+
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Table 'MyIngress.dmac': hit with handle 0
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Dumping entry 0
+Match key:
+* hdr.ethernet.dstAddr: EXACT     00000a000001
+Action entry: MyIngress.forward - 1,
+
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Action entry is MyIngress.forward - 1,
+[11:19:01.206] [bmv2] [T] [thread 15855] [14.0] [cxt 0] Action MyIngress.forward
+[11:19:01.206] [bmv2] [T] [thread 15855] [14.0] [cxt 0] p4src/line_topo.p4(72) Primitive standard_metadata.egress_spec = egress_port
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Pipeline 'ingress': end
+[11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Egress port is 1
+[11:19:01.207] [bmv2] [D] [thread 15857] [14.0] [cxt 0] Pipeline 'egress': start
+[11:19:01.207] [bmv2] [D] [thread 15857] [14.0] [cxt 0] Pipeline 'egress': end
+[11:19:01.207] [bmv2] [D] [thread 15857] [14.0] [cxt 0] Deparser 'deparser': start
+[11:19:01.207] [bmv2] [D] [thread 15857] [14.0] [cxt 0] Deparsing header 'ethernet'
+[11:19:01.207] [bmv2] [D] [thread 15857] [14.0] [cxt 0] Deparser 'deparser': end
+[11:19:01.207] [bmv2] [D] [thread 15860] [14.0] [cxt 0] Transmitting packet of size 74 out of port 1
+```
+which describes how the P4 switch processes this packet.
+
 ## Submission and Grading
-Project 0 won't be graded. 
+
+### What to Submit
+
+You are expected to submit the following files. Please make sure all files are in the root of your git branch.
+- `topology/p4app_circle.json`. This file describes the topology you build.
+- `controller/controller_circle.py`. This file contains how you insert forwarding rules into P4 switches.
+- `report/report.md`. Please write the description of your work in `report/report.md` file (the `report` directory locates at the root directory of project 0). The description includes:
+	- How do you write forwarding rules in the `controller/controller_circle.py` file, and why do those rules work to enable communications between each pair of hosts.
+	- After running the applications, you can get the evaluation results. Please run these applications on all hosts, i.e., on host `h1-h3`. You will get the average throughput of iperf and the streaming throughput from the video application. Write these evaluation results in this file.
+
+You are expected to use Github Classroom to submit your project. 
+After completing a file, e.g., the `topology/p4app_circle.json` file, you can submit this file by using the following commands:
+```
+git commit topology/p4app_circle.json -m "COMMIT MESSAGE" # please use a reasonable commit message, especially if you are submitting code
+git push origin main # push the code to the remote github repository
+```
+
+### Grading
+This project do not grade. 
 
 ### Survey
 
