@@ -8,7 +8,7 @@
 
 ## Tutorial: The line topology example
 
-To start this tutorial, you will first need to get the [infrastructure setup](https://github.com/minlanyu/cs145-site/blob/spring2024/infra.md) and clone this repository with submodules
+To start this tutorial, you will first need to get the [infrastructure setup](https://github.com/minlanyu/cs145-site/blob/spring2025/infra.md) and clone this repository with submodules
 ```
 git clone --recurse-submodules <your repository>
 ```
