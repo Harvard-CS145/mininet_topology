@@ -345,4 +345,4 @@ This project do not grade.
 
 Please fill up the survey when you finish your project.
 
-[Survey link](https://docs.google.com/forms/d/e/1FAIpQLSf5l5XFowublpGOJB6uja5j_5uYW05YfAocjEOOw45ZWqoDrg/viewform?usp=pp_url)
+[Survey link](https://forms.gle/ZfKSjxUkoQ56WJhn8)
