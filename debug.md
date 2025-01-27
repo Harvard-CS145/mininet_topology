@@ -17,7 +17,7 @@ Action entry: MyIngress.forward - 1
 This means you add a table entry, whose key is the destination MAC address `00000a000001`, and the action is `forward(1)`.
 
 #### Monitoring packet processing and traveling
-After a switch processes a packet, the log file may include all the stages the packet incurs at the switch: 
+After a switch processes a packet, the log file may include all the stages the packet incurs at the switch:
 ```
 [11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Processing packet received on port 2
 [11:19:01.206] [bmv2] [D] [thread 15855] [14.0] [cxt 0] Parser 'parser': start

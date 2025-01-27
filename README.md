@@ -20,7 +20,7 @@ Run `./pull_update.sh` to pull project updates (if any). You might need to merge
 
 We start by defining a few networking terms used in this project. Note that the description here is not precise but just a way for you to understand the problem. You will learn the actual meanings of the terms after a few lectures in the class. For now, you can imagine a *topology* just as a graph, where *switches* and *hosts* are nodes in the graph, and they are connected by *links*. *Hosts* are those nodes at the edge of the graph. They can generate traffic and run applications. *Switches* are internal nodes in the graph that connect *hosts* or *switches* together. *Port* indicates the end of each link at a *node*.
 
-The job of networking is to deliver messages along a path of multiple nodes to finally reach the destination. This is a distributed process. That is, every node in the graph independently decide where to *forward* messages and together they deliver the message to the destination. To achieve this, each node will decide locally which *port* (i.e., link) to send the message based on its destination. This is called a *forwarding rule*. Your job would be program the forwarding rules. 
+The job of networking is to deliver messages along a path of multiple nodes to finally reach the destination. This is a distributed process. That is, every node in the graph independently decide where to *forward* messages and together they deliver the message to the destination. To achieve this, each node will decide locally which *port* (i.e., link) to send the message based on its destination. This is called a *forwarding rule*. Your job would be program the forwarding rules.
 
 ### Create the line topology in Mininet
 
@@ -104,11 +104,11 @@ You can also find out the port mappings using the `links` or  `net` CLI commands
 
 ```
 mininet> links
-h1-eth0<->s1-eth1 (OK OK) 
-h2-eth0<->s2-eth1 (OK OK) 
-h3-eth0<->s3-eth1 (OK OK) 
-s1-eth2<->s2-eth2 (OK OK) 
-s2-eth3<->s3-eth2 (OK OK) 
+h1-eth0<->s1-eth1 (OK OK)
+h2-eth0<->s2-eth1 (OK OK)
+h3-eth0<->s3-eth1 (OK OK)
+s1-eth2<->s2-eth2 (OK OK)
+s2-eth3<->s3-eth2 (OK OK)
 ```
 
 #### Run the controller
@@ -121,7 +121,7 @@ You should start by setting up the topology by running the above *p4run* command
 
 #### Verify your controller
 
-If your controller installs routing rules successfully, hosts should be able to communicate with each other. 
+If your controller installs routing rules successfully, hosts should be able to communicate with each other.
 To test the connectivity between all pairs of hosts, you can run the following commands in Mininet CLI:
 
 - `pingall`: Ping between any host pair. If `pingall` fails, you will see prompt stopped. (Ctrl+C will kill the `pingall` command).
@@ -137,7 +137,7 @@ In this project, your task is to build the circle topology in `topology/p4app_ci
 
 <img src="./figures/circle_topo.png" width="500">
 
-You **only** need to write your own code in places marked with a ``TODO`` (i.e., the `topology` field).
+You **only** need to write your own code in places marked with a `TODO` (i.e., the `topology` field).
 
 Next, you need to write forwarding rules for the circle topology in `controller/controller_circle.json`. You **only** need to write your own code in places marked with a ``TODO`` (i.e., within the `route` function).
 
@@ -147,9 +147,9 @@ You can test your solution in the following steps:
 
 1. Start the topology:
 
-  ```bash
-  sudo p4run --config topology/p4app_circle.json
-  ```
+    ```bash
+    sudo p4run --config topology/p4app_circle.json
+    ```
 
 2. Run the controller:
 

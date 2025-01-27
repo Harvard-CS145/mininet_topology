@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 res=$(git remote -v | grep upstream)
 

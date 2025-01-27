@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#!/usr/bin/python3
 
 # python controller/controller_line.py
 #   Insert P4 table entries to route traffic among hosts
@@ -6,7 +6,8 @@
 from p4utils.utils.helper import load_topo
 from p4utils.utils.sswitch_thrift_API import SimpleSwitchThriftAPI
 
-class RoutingController(object):
+
+class RoutingController:
 
     def __init__(self):
         self.topo = load_topo("topology.json")
@@ -18,17 +19,17 @@ class RoutingController(object):
         self.reset_states()
         self.set_table_defaults()
 
-    # Establishes a connection with the simple switch `thrift` server 
-    # using the `SimpleSwitchAPI` object 
-    # and saves those objects in the `self.controllers` dictionary. 
+    # Establishes a connection with the simple switch `thrift` server
+    # using the `SimpleSwitchAPI` object
+    # and saves those objects in the `self.controllers` dictionary.
     # This dictionary has the form of: `{'sw_name' : SimpleSwitchAPI()}`.
     def connect_to_switches(self):
         for p4switch in self.topo.get_p4switches():
             thrift_port = self.topo.get_thrift_port(p4switch)
             self.controllers[p4switch] = SimpleSwitchThriftAPI(thrift_port)
 
-    # Iterates over the `self.controllers` object 
-    # and runs the `reset_state` function which empties the state 
+    # Iterates over the `self.controllers` object
+    # and runs the `reset_state` function which empties the state
     # (registers, tables, etc) for every switch.
     def reset_states(self):
         [controller.reset_state() for controller in self.controllers.values()]
@@ -63,4 +64,3 @@ class RoutingController(object):
 
 if __name__ == "__main__":
     controller = RoutingController().main()
-
