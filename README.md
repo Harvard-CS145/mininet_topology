@@ -14,7 +14,7 @@ To start this tutorial, you will first need to get the [infrastructure setup](ht
 git clone --recurse-submodules "<your repository>"
 ```
 
-Run `./pull_update.sh` to pull project updates (if any). You might need to merge conflicts manually: most of the time, you just need to accept incoming changes; reach to TF if it is hard to merge. This step also applies to all subsequent projects.
+When there are updates to the starter code, TFs will open pull requests in your repository. You should merge the pull request and pull the changes back to local. You might need to resolve conflicts manually (either when merging PR in remote or pulling back to local). However, most of the times there shouldn't be too much conflict as long as you do not make changes to test scripts, infrastructures, etc. Reach out to TF if it is hard to merge. This also applies to all subsequent projects.
 
 ### Networking terms
 
@@ -213,6 +213,18 @@ This command opens a Chrome web browser on host `h2` which visits a video websit
 Try playing the video. You should see something like this:
 
 <img src="./figures/video.png" width="600">
+
+> [!NOTE]
+> If you see errors like "running chromimum failed: cannot find tracking cgroup", try the following:
+>
+> First switch the windowing system to X11 if you are using Wayland. To check this, you can do `echo $XDG_SESSION_TYPE`. In order to switch to X11, open `/etc/gdm3/custom.conf` (root access needed) and add or uncomment the line `WaylandEnable=false`. Then reboot your virtual machine and confirm that you are now on X11.
+>
+> Then each time before starting the video streaming client in the terminal spawned by `xterm h2`, do the following:
+>
+> ```bash
+> sudo mount -t cgroup2 cgroup2 /sys/fs/cgroup
+> sudo mount -t securityfs securityfs /sys/kernel/security
+> ```
 
 #### Video streaming performance
 
