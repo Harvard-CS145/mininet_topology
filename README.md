@@ -255,7 +255,7 @@ Memcached should be pre-installed for you on the provided VM. If it is not avail
 
 ```bash
 sudo apt install memcached
-pip install memcache
+sudo pip install memcache
 ```
 
 In order to start the server and client, first, you can access terminals for `h1` and `h2`:
@@ -403,3 +403,6 @@ This project do not grade.
 ### Survey
 
 Please fill up the survey when you finish your project: [Survey link](https://forms.gle/ZfKSjxUkoQ56WJhn8).
+
+> [!WARNING]
+> Remember to regularly clean up your `log/` and `pcap/` folder. They will keep growing in size and may end up taking up all disk space available in the VM and lead to a crash.
